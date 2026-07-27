@@ -21,6 +21,8 @@ from config.paths import (  # noqa: E402
     GAP_NEED_EMOTIONS,
     GAP_NEED_IMDB,
     GAP_NEED_REVIEWS,
+    RAW_EMOTIONS_DIR,
+    RAW_REVIEWS_DIR,
     SCRAPER_EMOTIONS_DIR,
     SCRAPER_FEAR_RANKING,
     SCRAPER_REVIEWS_DIR,
@@ -52,8 +54,12 @@ def inventory(
         )
 
     u = pd.read_csv(universe_path)
-    review_ids = _ids_from_glob(reviews_dir, "reviews_")
-    emotion_ids = _ids_from_glob(emotions_dir, "emotions_")
+    review_ids = _ids_from_glob(reviews_dir, "reviews_") | _ids_from_glob(
+        RAW_REVIEWS_DIR, "reviews_"
+    )
+    emotion_ids = _ids_from_glob(emotions_dir, "emotions_") | _ids_from_glob(
+        RAW_EMOTIONS_DIR, "emotions_"
+    )
 
     legacy_fear: set[str] = set()
     if legacy_ranking.exists():

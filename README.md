@@ -24,8 +24,12 @@ enrich (universo + imdb_id) → fetch (reseñas) → analyze (emociones) → sco
 |-------|--------|----------------|
 | Universo EN | `pipeline/build_universe.py` | `data/processed/universe_en.csv` |
 | Cobertura | `pipeline/inventory_coverage.py` | `data/gaps/coverage_*.csv` |
+| Gap priorizado | `pipeline/build_reviews_priority.py` | `data/gaps/gap_need_reviews_priority.csv` |
+| Fetch reseñas | `pipeline/fetch_imdb_reviews.py` | `data/raw/reviews/reviews_*.csv` |
 | Fear score | `pipeline/compute_fear_score.py` | `data/exports/fear_scores.csv` |
 | Export sitio | `pipeline/export_site.py` | (fase 2) |
+
+Gap de reseñas: solo features con `vote_count >= 100` (cola corta ~370), no el long tail.
 
 ## Setup
 

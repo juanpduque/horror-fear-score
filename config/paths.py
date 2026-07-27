@@ -66,10 +66,21 @@ UNIVERSE_EN = PROCESSED_DIR / "universe_en.csv"
 COVERAGE = GAPS_DIR / "coverage_en.csv"
 GAP_NEED_IMDB = GAPS_DIR / "gap_need_imdb.csv"
 GAP_NEED_REVIEWS = GAPS_DIR / "gap_need_reviews.csv"
+GAP_NEED_REVIEWS_PRIORITY = GAPS_DIR / "gap_need_reviews_priority.csv"
 GAP_NEED_EMOTIONS = GAPS_DIR / "gap_need_emotions.csv"
 FEAR_SCORES = EXPORTS_DIR / "fear_scores.csv"
 
+RAW_REVIEWS_DIR = RAW_DIR / "reviews"
+RAW_EMOTIONS_DIR = RAW_DIR / "emotions"
+
 
 def ensure_data_dirs() -> None:
-    for d in (RAW_DIR, PROCESSED_DIR, GAPS_DIR, EXPORTS_DIR):
+    for d in (
+        RAW_DIR,
+        PROCESSED_DIR,
+        GAPS_DIR,
+        EXPORTS_DIR,
+        RAW_REVIEWS_DIR,
+        RAW_EMOTIONS_DIR,
+    ):
         d.mkdir(parents=True, exist_ok=True)

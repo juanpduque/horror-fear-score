@@ -1,6 +1,9 @@
 pandas>=2.0
 python-dotenv>=1.0
 tqdm>=4.66
+# Fetch IMDb reviews
+selenium>=4.15
+beautifulsoup4>=4.12
 # Emotion analysis (fase analyze; no requerido solo para universo/cobertura)
 # torch
 # transformers

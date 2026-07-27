@@ -25,6 +25,8 @@ data/processed/**
 data/exports/**
 data/gaps/**
 !data/raw/.gitkeep
+!data/raw/reviews/.gitkeep
+!data/raw/emotions/.gitkeep
 !data/processed/.gitkeep
 !data/exports/.gitkeep
 !data/gaps/.gitkeep

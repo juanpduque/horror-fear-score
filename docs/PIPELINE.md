@@ -12,8 +12,27 @@ Source catalog: Anatomy of Fear `pipeline/data/horror_movies.csv`
 
 1. `build_universe.py` — EN horror after exclusions → `data/processed/universe_en.csv`
 2. `inventory_coverage.py` — join to legacy reviews/emotions → gap CSVs
-3. `compute_fear_score.py` — aggregate fear from emotion files → `data/exports/fear_scores.csv`
-4. `export_site.py` — thin JSON for the narrative site (fase 2)
+3. `build_reviews_priority.py` — features + vote floor → `data/gaps/gap_need_reviews_priority.csv`
+4. `fetch_imdb_reviews.py` — Selenium batch scrape → `data/raw/reviews/reviews_*.csv`
+5. `compute_fear_score.py` — aggregate fear from emotion files → `data/exports/fear_scores.csv`
+6. `export_site.py` — thin JSON for the narrative site (fase 2)
+
+### Reviews gap strategy
+
+Do **not** scrape the full `gap_need_reviews` (~13k). Most titles have TMDB
+`vote_count < 10` or are shorts. Priority queue defaults:
+
+- `runtime >= 41` (exclude shorts ≤40)
+- `vote_count >= 100` (~370 features)
+- sort by `vote_count`, then `popularity`
+
+```bash
+python pipeline/build_reviews_priority.py
+python pipeline/fetch_imdb_reviews.py --dry-run
+python pipeline/fetch_imdb_reviews.py --limit 5   # pilot (headed Chrome)
+```
+
+Prefer headed Chrome; headless is often challenged by IMDb.
 
 ## External data (not in git)
 

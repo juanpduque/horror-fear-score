@@ -1,0 +1,39 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Pipeline outputs (regenerable; keep directory placeholders)
+data/raw/**
+data/processed/**
+data/exports/**
+data/gaps/**
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/exports/.gitkeep
+!data/gaps/.gitkeep
+
+# Large local caches / external mirrors
+data/imdb_datasets/
+*.tsv.gz
+*.parquet
+
+# Logs
+logs/
+*.log

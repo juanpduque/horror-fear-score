@@ -34,6 +34,31 @@ python pipeline/fetch_imdb_reviews.py --limit 5   # pilot (headed Chrome)
 
 Prefer headed Chrome; headless is often challenged by IMDb.
 
+## AWS (EC2 + S3)
+
+Bucket: `s3://horror-fear-score-102516364259/hfs/`
+
+| Prefijo | Contenido |
+|---------|-----------|
+| `input/` | priority CSV, legacy id manifests, universe |
+| `legacy/reviews/` | reseñas ya scrapeadas (~17k) |
+| `legacy/emotions/` | emociones ya calculadas (~17k) |
+| `work/reviews/` | reseñas nuevas del worker EC2 |
+| `latest/` | progress / DONE markers |
+
+```bash
+# 1) Subir disco → S3 (~900MB; puede tardar)
+bash pipeline/aws/sync_legacy_to_s3.sh
+
+# 2) Lanzar EC2 (Xvfb + Chrome headed) para la cola prioritaria
+bash pipeline/aws/launch_reviews_ec2.sh
+# piloto: LIMIT=10 bash pipeline/aws/launch_reviews_ec2.sh
+```
+
+Reusa SG/key/IAM de `aof-imdb-selenium`. Costo aprox: t3.medium ~USD 0.04/h + S3 negligible.
+No termina la instancia AOF de enrich de IDs (`aof-imdb-selenium`); lanza una aparte (`hfs-imdb-reviews`).
+
+
 ## External data (not in git)
 
 | Path env | Role |

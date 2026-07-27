@@ -16,7 +16,7 @@ PROJECT_ROOT = Path(
 AOF_ROOT = Path(
     os.getenv(
         "AOF_ROOT",
-        "/Users/juanpabloduque/Documents/anatomy-of-fear",
+        "/Users/juanpabloduque/Documents/what-fear-looks-like",
     )
 ).expanduser()
 
@@ -69,9 +69,15 @@ GAP_NEED_REVIEWS = GAPS_DIR / "gap_need_reviews.csv"
 GAP_NEED_REVIEWS_PRIORITY = GAPS_DIR / "gap_need_reviews_priority.csv"
 GAP_NEED_EMOTIONS = GAPS_DIR / "gap_need_emotions.csv"
 FEAR_SCORES = EXPORTS_DIR / "fear_scores.csv"
+LEGACY_REVIEW_IDS = PROCESSED_DIR / "legacy_review_ids.txt"
+LEGACY_EMOTION_IDS = PROCESSED_DIR / "legacy_emotion_ids.txt"
 
 RAW_REVIEWS_DIR = RAW_DIR / "reviews"
 RAW_EMOTIONS_DIR = RAW_DIR / "emotions"
+
+# --- AWS ---
+S3_BUCKET = os.getenv("S3_BUCKET", "horror-fear-score-102516364259")
+S3_PREFIX = os.getenv("S3_PREFIX", "hfs")
 
 
 def ensure_data_dirs() -> None:

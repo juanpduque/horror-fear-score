@@ -145,6 +145,29 @@ def save_reviews(imdb_id: str, reviews: list[str], out_dir: Path) -> Path:
     return path
 
 
+def _ids_from_file(path: Path | None) -> set[str]:
+    if not path or not path.exists():
+        return set()
+    ids: set[str] = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        s = line.strip()
+        if s.startswith("tt"):
+            ids.add(s)
+    return ids
+
+
+def _upload_to_s3(local_path: Path, s3_uri_prefix: str | None) -> None:
+    if not s3_uri_prefix:
+        return
+    import subprocess
+
+    dest = s3_uri_prefix.rstrip("/") + "/" + local_path.name
+    subprocess.run(
+        ["aws", "s3", "cp", str(local_path), dest, "--quiet"],
+        check=False,
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Fetch IMDb reviews for prioritized gap (resumable)."
@@ -158,6 +181,18 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--sleep", type=float, default=2.0)
+    parser.add_argument(
+        "--skip-ids-file",
+        type=Path,
+        default=None,
+        help="Text file of imdb_ids (one per line) to skip (e.g. legacy manifest).",
+    )
+    parser.add_argument(
+        "--s3-uri",
+        type=str,
+        default=None,
+        help="If set, aws s3 cp each saved reviews_*.csv to this prefix.",
+    )
     parser.add_argument(
         "--headless",
         action="store_true",
@@ -190,6 +225,7 @@ def main() -> None:
 
     legacy = None if args.ignore_legacy else SCRAPER_REVIEWS_DIR
     already = _existing_review_ids(args.out_dir, legacy)
+    already |= _ids_from_file(args.skip_ids_file)
     pending = pri[~pri["imdb_id"].astype(str).isin(already)].copy()
     pending = pending.iloc[args.offset :]
     if args.limit is not None:
@@ -237,6 +273,7 @@ def main() -> None:
                     )
                 else:
                     path = save_reviews(imdb_id, reviews, args.out_dir)
+                    _upload_to_s3(path, args.s3_uri)
                     logging.info("Saved %d reviews → %s", len(reviews), path)
                     progress_rows.append(
                         {
@@ -261,6 +298,13 @@ def main() -> None:
         driver.quit()
         prog = args.out_dir.parent / "fetch_reviews_progress.csv"
         pd.DataFrame(progress_rows).to_csv(prog, index=False)
+        if args.s3_uri:
+            base = args.s3_uri.rstrip("/")
+            if base.endswith("/work/reviews"):
+                latest_prefix = base[: -len("/work/reviews")] + "/latest"
+            else:
+                latest_prefix = base
+            _upload_to_s3(prog, latest_prefix)
         logging.info("Progress written to %s", prog)
 
 
